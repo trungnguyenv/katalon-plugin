@@ -1,6 +1,8 @@
 package com.katalon.jenkins.plugin;
 
 import com.google.common.base.Throwables;
+import com.katalon.utils.KatalonUtils;
+import com.katalon.utils.Logger;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -84,6 +86,9 @@ public class ExecuteKatalonStudioTask extends Builder {
     @Override
     public boolean perform(AbstractBuild<?, ?> abstractBuild, Launcher launcher, BuildListener buildListener)
             throws InterruptedException, IOException {
+
+        Logger logger = new JenkinsLogger(buildListener);
+
         try {
 
             FilePath workspace = abstractBuild.getWorkspace();
@@ -94,7 +99,7 @@ public class ExecuteKatalonStudioTask extends Builder {
                 if (workspaceLocation != null) {
 
                     return KatalonUtils.executeKatalon(
-                            buildListener,
+                            logger,
                             this.version,
                             this.location,
                             workspaceLocation,
@@ -109,7 +114,7 @@ public class ExecuteKatalonStudioTask extends Builder {
 
         } catch (Exception e) {
             String stackTrace = Throwables.getStackTraceAsString(e);
-            LogUtils.log(buildListener, stackTrace);
+            logger.info(stackTrace);
             return false;
         }
     }

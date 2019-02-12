@@ -29,6 +29,7 @@
         <junit.plugin.version>1.20</junit.plugin.version>
         <jackson.version>2.9.5</jackson.version>
         <commons-lang3.version>3.8.1</commons-lang3.version>
+        <utils.version>1.0.0</utils.version>
     </properties>
 
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
@@ -57,8 +58,7 @@
       <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
       <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
       <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-      <tag>katalon-1.0.0</tag>
-  </scm>
+    </scm>
 
     <repositories>
         <repository>
@@ -80,16 +80,6 @@
             <version>${junit.plugin.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness</artifactId>
         </dependency>
@@ -97,7 +87,11 @@
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.katalon</groupId>
+            <artifactId>utils</artifactId>
+            <version>${utils.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
