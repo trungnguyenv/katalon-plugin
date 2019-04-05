@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>3.18</version>
+        <version>3.19</version>
         <relativePath />
     </parent>
 
@@ -29,7 +29,7 @@
         <junit.plugin.version>1.20</junit.plugin.version>
         <jackson.version>2.9.5</jackson.version>
         <commons-lang3.version>3.8.1</commons-lang3.version>
-        <utils.version>1.0.2</utils.version>
+        <utils.version>1.0.5</utils.version>
     </properties>
 
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
