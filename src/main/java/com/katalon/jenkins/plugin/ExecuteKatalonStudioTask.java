@@ -9,17 +9,18 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
-import hudson.model.Environment;
+import hudson.remoting.Callable;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import net.sf.json.JSONObject;
+
+import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class ExecuteKatalonStudioTask extends Builder {
 
@@ -105,15 +106,25 @@ public class ExecuteKatalonStudioTask extends Builder {
                     environmentVariables.putAll(System.getenv());
                     abstractBuild.getEnvironment(buildListener).entrySet()
                             .forEach(entry -> environmentVariables.put(entry.getKey(), entry.getValue()));
-                    return KatalonUtils.executeKatalon(
-                            logger,
-                            this.version,
-                            this.location,
-                            workspaceLocation,
-                            this.executeArgs,
-                            this.x11Display,
-                            this.xvfbConfiguration,
-                            environmentVariables);
+                    return launcher.getChannel().call(new Callable<Boolean, Exception>() {
+                        @Override
+                        public Boolean call() throws Exception {
+                            return KatalonUtils.executeKatalon(
+                                logger,
+                                version,
+                                location,
+                                workspaceLocation,
+                                executeArgs,
+                                x11Display,
+                                xvfbConfiguration,
+                                environmentVariables);
+                        }
+
+                        @Override
+                        public void checkRoles(RoleChecker roleChecker) throws SecurityException {
+
+                        }
+                    });
                 }
             }
 
