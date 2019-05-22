@@ -3,6 +3,7 @@ package com.katalon.jenkins.plugin;
 import com.google.common.base.Throwables;
 import com.katalon.utils.KatalonUtils;
 import com.katalon.utils.Logger;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -13,7 +14,6 @@ import hudson.remoting.Callable;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import net.sf.json.JSONObject;
-
 import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
@@ -92,49 +92,18 @@ public class ExecuteKatalonStudioTask extends Builder {
     public boolean perform(AbstractBuild<?, ?> abstractBuild, Launcher launcher, BuildListener buildListener)
             throws InterruptedException, IOException {
 
-        Logger logger = new JenkinsLogger(buildListener);
-
-        try {
-
-            FilePath workspace = abstractBuild.getWorkspace();
-
-            if (workspace != null) {
-                String workspaceLocation = workspace.getRemote();
-
-                if (workspaceLocation != null) {
-                    Map<String, String> environmentVariables = new HashMap<>();
-                    environmentVariables.putAll(System.getenv());
-                    abstractBuild.getEnvironment(buildListener).entrySet()
-                            .forEach(entry -> environmentVariables.put(entry.getKey(), entry.getValue()));
-                    return launcher.getChannel().call(new Callable<Boolean, Exception>() {
-                        @Override
-                        public Boolean call() throws Exception {
-                            return KatalonUtils.executeKatalon(
-                                logger,
-                                version,
-                                location,
-                                workspaceLocation,
-                                executeArgs,
-                                x11Display,
-                                xvfbConfiguration,
-                                environmentVariables);
-                        }
-
-                        @Override
-                        public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-
-                        }
-                    });
-                }
-            }
-
-            return true;
-
-        } catch (Exception e) {
-            String stackTrace = Throwables.getStackTraceAsString(e);
-            logger.info(stackTrace);
-            return false;
-        }
+        FilePath workspace = abstractBuild.getWorkspace();
+        EnvVars buildEnvironment = abstractBuild.getEnvironment(buildListener);
+        return ExecuteKatalonStudioUtils.executeKatalon(
+                workspace,
+                buildEnvironment,
+                launcher,
+                buildListener,
+                version,
+                location,
+                executeArgs,
+                x11Display,
+                xvfbConfiguration);
     }
 
     @Extension
