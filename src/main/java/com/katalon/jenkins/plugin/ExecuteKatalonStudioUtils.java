@@ -29,9 +29,7 @@ public class ExecuteKatalonStudioUtils {
             String xvfbConfiguration,
             String plainId,
             String apiKey,
-            String serverUrl)
-            throws IOException, InterruptedException {
-
+            String serverUrl) {
         Logger logger = new JenkinsLogger(buildListener);
         try {
             return launcher.getChannel().call(new Callable<Boolean, Exception>() {
@@ -59,9 +57,8 @@ public class ExecuteKatalonStudioUtils {
 
                                 if (token != null) {
                                     String result = analyticsAuthorizationHandler.runJob(token, serverUrl, plainId);
-                                    logger.info(result);
+                                    logger.info("Create job success! Job id is " + result);
                                 }
-
                             } else {
                                 return KatalonUtils.executeKatalon(
                                     logger,
@@ -75,14 +72,10 @@ public class ExecuteKatalonStudioUtils {
                             }
                         }
                     }
-
                     return true;
-
                 }
-
                 @Override
                 public void checkRoles(RoleChecker roleChecker) throws SecurityException {
-
                 }
             });
         } catch (Exception e) {

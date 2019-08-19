@@ -1,5 +1,6 @@
 package com.katalon.jenkins.plugin;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import hidden.jth.org.apache.http.HttpHeaders;
 import hidden.jth.org.apache.http.HttpResponse;
@@ -9,7 +10,6 @@ import hidden.jth.org.apache.http.client.methods.HttpPost;
 import hidden.jth.org.apache.http.client.methods.HttpPut;
 import hidden.jth.org.apache.http.client.utils.URIBuilder;
 import hidden.jth.org.apache.http.message.BasicNameValuePair;
-import org.apache.tools.ant.taskdefs.condition.Http;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -45,8 +45,11 @@ public class AnalyticsAuthorizationHandler {
           null,
           null,
           null);
+
       InputStream responseContent = httpResponse.getEntity().getContent();
-      return responseContent.toString();
+      ObjectMapper objectMapper = new ObjectMapper();
+      List<Map<String, Object>> map = objectMapper.readValue(responseContent, new TypeReference<List<Map>>() {});
+      return map.get(0).get("build_num").toString();
     } catch (Exception e) {
       return "Resource not found " + e.getMessage();
     }
