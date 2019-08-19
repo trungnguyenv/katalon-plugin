@@ -185,7 +185,7 @@ public class ExecuteKatalonStudioTask extends Builder {
                 if (token != null) {
                     return FormValidation.ok("Success!");
                 } else {
-                    return FormValidation.error("Cannot connect to KA");
+                    return FormValidation.error("Cannot connect to Katalon Analytics");
                 }
             } catch (Exception e) {
                 return FormValidation.error("Error " + e.getMessage());

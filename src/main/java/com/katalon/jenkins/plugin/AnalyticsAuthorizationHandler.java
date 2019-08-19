@@ -6,8 +6,10 @@ import hidden.jth.org.apache.http.HttpResponse;
 import hidden.jth.org.apache.http.NameValuePair;
 import hidden.jth.org.apache.http.client.HttpResponseException;
 import hidden.jth.org.apache.http.client.methods.HttpPost;
+import hidden.jth.org.apache.http.client.methods.HttpPut;
 import hidden.jth.org.apache.http.client.utils.URIBuilder;
 import hidden.jth.org.apache.http.message.BasicNameValuePair;
+import org.apache.tools.ant.taskdefs.condition.Http;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -19,13 +21,36 @@ public class AnalyticsAuthorizationHandler {
 
   private static String TOKEN_URI = "/oauth/token";
 
-  private static  String PLAN_JOB = "";
+  private static  String EXECUTE_JOB = "/api/v1/run-configurations/%s/execute";
 
   private static String serverApiOAuth2GrantType = "password";
 
   private static String serverApiOAuth2ClientId = "kit";
 
   private static String serverApiOAuth2ClientSecret = "kit";
+
+  public String runJob(String token, String servreUrl, String planId) {
+    String url = String.format(servreUrl + EXECUTE_JOB, planId);
+
+    try {
+      URIBuilder uriBuilder = new URIBuilder(url);
+
+      HttpPut httpPut = new HttpPut(uriBuilder.build());
+      httpPut.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+      HttpResponse httpResponse = HttpHelper.sendRequest(
+          httpPut,
+          token,
+          null,
+          null,
+          null,
+          null,
+          null);
+      InputStream responseContent = httpResponse.getEntity().getContent();
+      return responseContent.toString();
+    } catch (Exception e) {
+      return "Resource not found " + e.getMessage();
+    }
+  }
 
   public String requestToken(String serverUrl, String apiKey) throws Exception {
     String url = serverUrl + TOKEN_URI;

@@ -53,8 +53,17 @@ public class ExecuteKatalonStudioUtils {
                             buildEnvironment.entrySet()
                                     .forEach(entry -> environmentVariables.put(entry.getKey(), entry.getValue()));
 
+                            if (plainId != null) {
+                                AnalyticsAuthorizationHandler analyticsAuthorizationHandler = new AnalyticsAuthorizationHandler();
+                                String token = analyticsAuthorizationHandler.requestToken(serverUrl, apiKey);
 
-                            return KatalonUtils.executeKatalon(
+                                if (token != null) {
+                                    String result = analyticsAuthorizationHandler.runJob(token, serverUrl, plainId);
+                                    logger.info(result);
+                                }
+
+                            } else {
+                                return KatalonUtils.executeKatalon(
                                     logger,
                                     version,
                                     location,
@@ -63,7 +72,7 @@ public class ExecuteKatalonStudioUtils {
                                     x11Display,
                                     xvfbConfiguration,
                                     environmentVariables);
-
+                            }
                         }
                     }
 
