@@ -85,10 +85,6 @@
             <artifactId>jenkins-test-harness</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.main</groupId>
-            <artifactId>jenkins-test-harness</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.katalon</groupId>
             <artifactId>utils</artifactId>
             <version>${utils.version}</version>

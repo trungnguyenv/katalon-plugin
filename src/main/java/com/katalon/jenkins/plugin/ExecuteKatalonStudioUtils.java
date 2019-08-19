@@ -26,7 +26,10 @@ public class ExecuteKatalonStudioUtils {
             String location,
             String executeArgs,
             String x11Display,
-            String xvfbConfiguration)
+            String xvfbConfiguration,
+            String plainId,
+            String apiKey,
+            String serverUrl)
             throws IOException, InterruptedException {
 
         Logger logger = new JenkinsLogger(buildListener);
@@ -37,7 +40,9 @@ public class ExecuteKatalonStudioUtils {
 
                     Logger logger = new JenkinsLogger(buildListener);
 
-
+                    logger.info("plainId " + plainId);
+                    logger.info("apiKey " + apiKey);
+                    logger.info("server " + serverUrl);
 
                     if (workspace != null) {
                         String workspaceLocation = workspace.getRemote();

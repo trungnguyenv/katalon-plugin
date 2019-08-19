@@ -21,4 +21,8 @@
         <f:textbox />
     </f:entry>
 
+    <f:entry title="Plan Id" field="planId">
+        <f:textbox />
+    </f:entry>
+
 </j:jelly>

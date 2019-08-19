@@ -1,0 +1,23 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:section title="Katalon Analytics">
+        <f:entry title="Katalon Analytics Setting">
+            <table width="100%">
+
+               <f:entry title="Katalon Analytics URL" field="serverUrl">
+                    <f:textbox name="serverUrl" value="${inst.getValue().getServerUrl}" />
+               </f:entry>
+
+               <f:entry title="API Key (Katalon Analytics)" field="apiKey">
+                    <f:textbox name="apiKey" value="${inst.getValue().getApiKey}" />
+               </f:entry>
+
+                <f:validateButton title="Test Connection" progress="Testing..." method="testConnection" with="serverUrl,apiKey" />
+
+            </table>
+        </f:entry>
+
+    </f:section>
+
+</j:jelly>
