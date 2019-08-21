@@ -6,6 +6,7 @@ import hidden.jth.org.apache.http.HttpHeaders;
 import hidden.jth.org.apache.http.HttpResponse;
 import hidden.jth.org.apache.http.NameValuePair;
 import hidden.jth.org.apache.http.client.HttpResponseException;
+import hidden.jth.org.apache.http.client.methods.HttpGet;
 import hidden.jth.org.apache.http.client.methods.HttpPost;
 import hidden.jth.org.apache.http.client.methods.HttpPut;
 import hidden.jth.org.apache.http.client.utils.URIBuilder;
@@ -21,7 +22,9 @@ public class AnalyticsAuthorizationHandler {
 
   private static String TOKEN_URI = "/oauth/token";
 
-  private static  String EXECUTE_JOB = "/api/v1/run-configurations/%s/execute";
+  private static String EXECUTE_JOB = "/api/v1/run-configurations/%s/execute";
+
+  private static String GET_LOG = "/api/v1/jobs/%s";
 
   private static String serverApiOAuth2GrantType = "password";
 
@@ -29,8 +32,37 @@ public class AnalyticsAuthorizationHandler {
 
   private static String serverApiOAuth2ClientSecret = "kit";
 
-  public String runJob(String token, String servreUrl, String planId) {
-    String url = String.format(servreUrl + EXECUTE_JOB, planId);
+  public String getStatus(String token, String serverUrl, long jobId) {
+    String url = String.format(serverUrl + GET_LOG, jobId);
+
+    try {
+      URIBuilder uriBuilder = new URIBuilder(url);
+
+      HttpGet httpGet = new HttpGet(uriBuilder.build());
+      httpGet.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+
+      ObjectMapper objectMapper = new ObjectMapper();
+
+      HttpResponse httpResponse = HttpHelper.sendRequest(
+          httpGet,
+          token,
+          null,
+          null,
+          null,
+          null,
+          null);
+      InputStream responseContent = httpResponse.getEntity().getContent();
+
+      Map<String, Object> map = objectMapper.readValue(responseContent, new TypeReference<Map>() {});
+
+      return map.get("status").toString();
+    } catch (Exception e) {
+      return "Resource not found " + e.getMessage();
+    }
+  }
+
+  public String runJob(String token, String serverUrl, String planId) {
+    String url = String.format(serverUrl + EXECUTE_JOB, planId);
 
     try {
       URIBuilder uriBuilder = new URIBuilder(url);
@@ -49,7 +81,7 @@ public class AnalyticsAuthorizationHandler {
       InputStream responseContent = httpResponse.getEntity().getContent();
       ObjectMapper objectMapper = new ObjectMapper();
       List<Map<String, Object>> map = objectMapper.readValue(responseContent, new TypeReference<List<Map>>() {});
-      return map.get(0).get("build_num").toString();
+      return map.get(0).get("job_id").toString();
     } catch (Exception e) {
       return "Resource not found " + e.getMessage();
     }
