@@ -1,4 +1,4 @@
-package com.katalon.jenkins.plugin;
+package com.katalon.jenkins.plugin.Utils;
 
 import com.google.common.base.Throwables;
 import com.katalon.utils.KatalonUtils;
@@ -6,12 +6,10 @@ import com.katalon.utils.Logger;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.remoting.Callable;
 import org.jenkinsci.remoting.RoleChecker;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,10 +24,7 @@ public class ExecuteKatalonStudioUtils {
             String location,
             String executeArgs,
             String x11Display,
-            String xvfbConfiguration,
-            String plainId,
-            String apiKey,
-            String serverUrl) {
+            String xvfbConfiguration) {
         Logger logger = new JenkinsLogger(buildListener);
         try {
             return launcher.getChannel().call(new Callable<Boolean, Exception>() {
@@ -37,10 +32,6 @@ public class ExecuteKatalonStudioUtils {
                 public Boolean call() throws Exception {
 
                     Logger logger = new JenkinsLogger(buildListener);
-
-                    logger.info("plainId " + plainId);
-                    logger.info("apiKey " + apiKey);
-                    logger.info("server " + serverUrl);
 
                     if (workspace != null) {
                         String workspaceLocation = workspace.getRemote();
@@ -50,26 +41,15 @@ public class ExecuteKatalonStudioUtils {
                             environmentVariables.putAll(System.getenv());
                             buildEnvironment.entrySet()
                                     .forEach(entry -> environmentVariables.put(entry.getKey(), entry.getValue()));
-
-                            if (plainId != null) {
-                                AnalyticsAuthorizationHandler analyticsAuthorizationHandler = new AnalyticsAuthorizationHandler();
-                                String token = analyticsAuthorizationHandler.requestToken(serverUrl, apiKey);
-
-                                if (token != null) {
-                                    String result = analyticsAuthorizationHandler.runJob(token, serverUrl, plainId);
-                                    logger.info("Create job success! Job id is " + result);
-                                }
-                            } else {
-                                return KatalonUtils.executeKatalon(
-                                    logger,
-                                    version,
-                                    location,
-                                    workspaceLocation,
-                                    executeArgs,
-                                    x11Display,
-                                    xvfbConfiguration,
-                                    environmentVariables);
-                            }
+                            return KatalonUtils.executeKatalon(
+                                logger,
+                                version,
+                                location,
+                                workspaceLocation,
+                                executeArgs,
+                                x11Display,
+                                xvfbConfiguration,
+                                environmentVariables);
                         }
                     }
                     return true;

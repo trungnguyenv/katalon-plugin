@@ -1,15 +1,22 @@
+package com.katalon.jenkins.plugin.Handler;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.apache.http.HttpHeaders;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.message.BasicNameValuePair;
+import com.katalon.jenkins.plugin.Entity.BuildInfo;
+import com.katalon.jenkins.plugin.Entity.Job;
+import com.katalon.jenkins.plugin.Entity.JobStatus;
+import com.katalon.jenkins.plugin.Entity.TestProject;
+import com.katalon.jenkins.plugin.Helper.HttpHelper;
+import com.katalon.utils.Logger;
+import hidden.jth.org.apache.http.HttpHeaders;
+import hidden.jth.org.apache.http.HttpResponse;
+import hidden.jth.org.apache.http.NameValuePair;
+import hidden.jth.org.apache.http.client.HttpResponseException;
+import hidden.jth.org.apache.http.client.methods.HttpGet;
+import hidden.jth.org.apache.http.client.methods.HttpPost;
+import hidden.jth.org.apache.http.client.methods.HttpPut;
+import hidden.jth.org.apache.http.client.utils.URIBuilder;
+import hidden.jth.org.apache.http.message.BasicNameValuePair;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -18,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class AnalyticsAuthorizationHandler {
+public class KatalonAnalyticsHandler {
 
   private static String TOKEN_URI = "/oauth/token";
 
@@ -36,12 +43,27 @@ public class AnalyticsAuthorizationHandler {
 
   private ObjectMapper objectMapper;
 
-  public AnalyticsAuthorizationHandler() {
+  private Logger logger;
+
+  public KatalonAnalyticsHandler() {
+    init();
+  }
+
+  public KatalonAnalyticsHandler(Logger logger) {
+    this.logger = logger;
+    init();
+  }
+
+  private void init() {
     objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  public void run(String serverUrl, String apiKey, String planId) {
+  public boolean run(String serverUrl, String apiKey, String planId) {
+    logger.info("apiKey: " + apiKey);
+    logger.info("serverUrl: " + serverUrl);
+    logger.info("planId: " + planId);
+
     try {
       String token = requestToken(serverUrl, apiKey);
 
@@ -49,11 +71,12 @@ public class AnalyticsAuthorizationHandler {
         BuildInfo buildInfo = runJob(token, serverUrl, planId);
 
         if (buildInfo == null) {
-          return;
+          logger.info("Cannot create job");
+          return false;
         }
 
         long jobId = buildInfo.getJob_id();
-        System.out.println("Job ID: " + buildInfo.getBuild_num());
+        logger.info("Job ID: " + buildInfo.getBuild_num());
         TimeUnit.SECONDS.sleep(1);
 
         //Wait for execute job is done.
@@ -61,10 +84,11 @@ public class AnalyticsAuthorizationHandler {
         while (true) {
           Job job = getJob(token, serverUrl, jobId);
           if (job == null) {
+            logger.info("Cannot get job from KA");
             break;
           }
           if (jobStatus == null) {
-            System.out.println("Job Detail: " + getJobUrl(serverUrl, job, planId));
+            logger.info("Job Detail: " + getJobUrl(serverUrl, job, planId));
           }
 
           JobStatus jobStatusCurrent = job.getStatus();
@@ -74,17 +98,21 @@ public class AnalyticsAuthorizationHandler {
           }
           jobStatus = jobStatusCurrent;
           if (JobStatus.getRunningStatuses().contains(jobStatus)) {
-            System.out.println("Job Status: " + jobStatus);
+            logger.info("Job Status: " + jobStatus);
           } else {
-            System.out.println("Job Status: " + job.getStatus());
+            logger.info("Job Status: " + job.getStatus());
             break;
           }
           TimeUnit.SECONDS.sleep(10);
         }
+        logger.info("Execute done");
+        return true;
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      logger.info(e.getMessage());
+      return false;
     }
+    return false;
   }
 
   private String getJobUrl(String serverUrl, Job job, String plainId) {
@@ -110,7 +138,7 @@ public class AnalyticsAuthorizationHandler {
 
       return objectMapper.readValue(responseContent, Job.class);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.info(e.getMessage());
       return null;
     }
   }
@@ -133,7 +161,7 @@ public class AnalyticsAuthorizationHandler {
       BuildInfo[] buildInfos = objectMapper.readValue(responseContent, BuildInfo[].class);
       return buildInfos[0];
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      logger.info(e.getMessage());
       return null;
     }
   }

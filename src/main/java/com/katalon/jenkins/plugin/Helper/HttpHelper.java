@@ -1,4 +1,4 @@
-package com.katalon.jenkins.plugin;
+package com.katalon.jenkins.plugin.Helper;
 
 import hidden.jth.org.apache.http.HttpEntity;
 import hidden.jth.org.apache.http.HttpHeaders;
@@ -29,11 +29,9 @@ import java.util.List;
 
 public class HttpHelper {
 
-
   private static final int DEFAULT_CONNECT_TIMEOUT = Integer.MAX_VALUE;
 
   private static final int DEFAULT_SOCKET_TIMEOUT = Integer.MAX_VALUE;
-
 
   private static HttpClient getHttpClient() {
     return getHttpClient(DEFAULT_CONNECT_TIMEOUT);

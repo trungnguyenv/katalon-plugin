@@ -1,3 +1,5 @@
+package com.katalon.jenkins.plugin.Entity;
+
 public class BuildInfo {
 
   private long build_num;
