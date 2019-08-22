@@ -100,13 +100,15 @@ public class KatalonAnalyticsHandler {
           if (JobStatus.getRunningStatuses().contains(jobStatus)) {
             logger.info("Job Status: " + jobStatus);
           } else {
-            logger.info("Job Status: " + job.getStatus());
-            break;
+            logger.info("Job Status: " + jobStatus);
+            logger.info("Execute done");
+            if (jobStatus == JobStatus.SUCCESS) {
+              return true;
+            }
+            return false;
           }
           TimeUnit.SECONDS.sleep(10);
         }
-        logger.info("Execute done");
-        return true;
       }
     } catch (Exception e) {
       logger.info(e.getMessage());
