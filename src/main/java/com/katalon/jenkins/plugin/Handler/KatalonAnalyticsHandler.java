@@ -2,10 +2,7 @@ package com.katalon.jenkins.plugin.Handler;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.katalon.jenkins.plugin.Entity.BuildInfo;
-import com.katalon.jenkins.plugin.Entity.Job;
-import com.katalon.jenkins.plugin.Entity.JobStatus;
-import com.katalon.jenkins.plugin.Entity.TestProject;
+import com.katalon.jenkins.plugin.Entity.*;
 import com.katalon.jenkins.plugin.Helper.HttpHelper;
 import com.katalon.utils.Logger;
 import hidden.jth.org.apache.http.HttpHeaders;
@@ -59,16 +56,18 @@ public class KatalonAnalyticsHandler {
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }
 
-  public boolean run(String serverUrl, String apiKey, String planId) {
+  public boolean run(String serverUrl, String apiKey, String plan, String projectId) {
     logger.info("apiKey: " + apiKey);
     logger.info("serverUrl: " + serverUrl);
-    logger.info("planId: " + planId);
+    logger.info("plan : " + plan);
+    logger.info("projectId : " + projectId);
+
 
     try {
       String token = requestToken(serverUrl, apiKey);
 
       if (token != null) {
-        BuildInfo buildInfo = runJob(token, serverUrl, planId);
+        BuildInfo buildInfo = runJob(token, serverUrl, plan);
 
         if (buildInfo == null) {
           logger.info("Cannot create job");
@@ -76,7 +75,6 @@ public class KatalonAnalyticsHandler {
         }
 
         long jobId = buildInfo.getJob_id();
-        logger.info("Job ID: " + buildInfo.getBuild_num());
         TimeUnit.SECONDS.sleep(1);
 
         //Wait for execute job is done.
@@ -88,7 +86,7 @@ public class KatalonAnalyticsHandler {
             break;
           }
           if (jobStatus == null) {
-            logger.info("Job Detail: " + getJobUrl(serverUrl, job, planId));
+            logger.info("Job Detail: " + getJobUrl(serverUrl, job, plan));
           }
 
           JobStatus jobStatusCurrent = job.getStatus();
@@ -107,7 +105,7 @@ public class KatalonAnalyticsHandler {
             }
             return false;
           }
-          TimeUnit.SECONDS.sleep(10);
+          TimeUnit.SECONDS.sleep(30);
         }
       }
     } catch (Exception e) {
@@ -117,7 +115,7 @@ public class KatalonAnalyticsHandler {
     return false;
   }
 
-  private String getJobUrl(String serverUrl, Job job, String plainId) {
+  private String getJobUrl(String serverUrl, Job job, Object plainId) {
     TestProject testProject = job.getTestProject();
     return String.format(serverUrl + LOG_INFOR, testProject.getTeamId(), testProject.getProjectId(), plainId ,job.getId());
   }
@@ -145,7 +143,7 @@ public class KatalonAnalyticsHandler {
     }
   }
 
-  private BuildInfo runJob(String token, String serverUrl, String planId) {
+  private BuildInfo runJob(String token, String serverUrl, Object planId) {
     String url = String.format(serverUrl + EXECUTE_JOB, planId);
     try {
       URIBuilder uriBuilder = new URIBuilder(url);

@@ -1,6 +1,8 @@
 package com.katalon.jenkins.plugin;
 
+import com.katalon.jenkins.plugin.Entity.Plan;
 import com.katalon.jenkins.plugin.Handler.KatalonAnalyticsHandler;
+import com.katalon.jenkins.plugin.Handler.KatalonAnalyticsSearchHandler;
 import com.katalon.jenkins.plugin.Utils.JenkinsLogger;
 import com.katalon.utils.Logger;
 import hudson.Extension;
@@ -12,6 +14,7 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Builder;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -21,28 +24,24 @@ import java.io.IOException;
 
 public class ExecuteKatalonAnalyticsPlan extends Builder {
 
-  private String planId;
+  private String plan;
 
   private String apiKey;
 
   private String serverUrl;
 
+  private String projectId;
+
   @DataBoundConstructor
   public ExecuteKatalonAnalyticsPlan(
-      String planId,
       String apiKey,
-      String serverUrl) {
-    this.planId = planId;
+      String serverUrl,
+      String projectId,
+      String plan) {
+    this.plan = plan;
     this.apiKey = apiKey;
     this.serverUrl = serverUrl;
-  }
-
-  public String getPlanId() {
-    return planId;
-  }
-
-  public void setPlanId(String planId) {
-    this.planId = planId;
+    this.projectId = projectId;
   }
 
   public String getApiKey() {
@@ -61,13 +60,28 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
     this.serverUrl = serverUrl;
   }
 
+  public String getProjectId() {
+    return projectId;
+  }
+
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
+
+  public String getPlan() {
+    return plan;
+  }
+
+  public void setPlan(String plan) {
+    this.plan = plan;
+  }
+
   @Override
   public boolean perform(AbstractBuild<?, ?> abstractBuild, Launcher launcher, BuildListener buildListener)
       throws InterruptedException, IOException {
     Logger logger = new JenkinsLogger(buildListener);
     KatalonAnalyticsHandler katalonAnalyticsHandler = new KatalonAnalyticsHandler(logger);
-
-    return katalonAnalyticsHandler.run(serverUrl, apiKey, planId);
+    return katalonAnalyticsHandler.run(serverUrl, apiKey, plan, projectId);
   }
 
   @Override
@@ -92,6 +106,10 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
 
     private String serverUrl;
 
+    private String projectId;
+
+    private String plan;
+
     public DescriptorImpl() {
       super(ExecuteKatalonAnalyticsPlan.class);
       load();
@@ -100,8 +118,10 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
     @Override
     public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
       req.bindParameters(this);
+      this.projectId = formData.getString("projectId");
       this.apiKey = formData.getString("apiKey");
       this.serverUrl = formData.getString("serverUrl");
+      this.plan = formData.getString("planKA");
       save();
       return super.configure(req, formData);
     }
@@ -109,10 +129,8 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
     public FormValidation doTestConnection(@QueryParameter("serverUrl") final String url,
                                            @QueryParameter("apiKey") final String apiKey) {
       KatalonAnalyticsHandler katalonAnalyticsHandler = new KatalonAnalyticsHandler();
-
       try {
         String token = katalonAnalyticsHandler.requestToken(url, apiKey);
-
         if (token != null) {
           return FormValidation.ok("Success!");
         } else {
@@ -121,6 +139,26 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
       } catch (Exception e) {
         return FormValidation.error("Error " + e.getMessage());
       }
+    }
+
+    public ListBoxModel doFillPlanKAItems(@QueryParameter("serverUrl") final String url,
+                                          @QueryParameter("apiKey") final String apiKey,
+                                          @QueryParameter("projectId") final String projectId) {
+      ListBoxModel options = new ListBoxModel();
+      KatalonAnalyticsHandler katalonAnalyticsHandler = new KatalonAnalyticsHandler();
+      try {
+        String token = katalonAnalyticsHandler.requestToken(url, apiKey);
+        if (token != null) {
+          KatalonAnalyticsSearchHandler katalonAnalyticsSearchHandler = new KatalonAnalyticsSearchHandler();
+          Plan[] plans = katalonAnalyticsSearchHandler.getPlan(token, url, projectId);
+          for (Plan plan : plans) {
+            options.add(plan.getName(), String.valueOf(plan.getId()));
+          }
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      return options;
     }
 
     public void setServerUrl(String serverUrl) {
@@ -139,12 +177,29 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
       return apiKey;
     }
 
+    public void setProjectId(String projectId) {
+      this.projectId = projectId;
+    }
+
+    public String getProjectId() {
+      return projectId;
+    }
+
+    public void setPlan(String plan) {
+      this.plan = plan;
+    }
+
+    public String getPlan() {
+      return plan;
+    }
+
     @Override
     public Builder newInstance(StaplerRequest req, JSONObject formData) throws FormException {
       return new ExecuteKatalonAnalyticsPlan(
-          formData.getString("planId"),
-          apiKey,
-          serverUrl);
+          formData.getString("apiKey"),
+          formData.getString("serverUrl"),
+          formData.getString("projectId"),
+          formData.getString("planKA"));
     }
   }
 }
