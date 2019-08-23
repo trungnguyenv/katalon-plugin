@@ -1,6 +1,7 @@
 package com.katalon.jenkins.plugin;
 
 import com.katalon.jenkins.plugin.Entity.Plan;
+import com.katalon.jenkins.plugin.Entity.Project;
 import com.katalon.jenkins.plugin.Handler.KatalonAnalyticsHandler;
 import com.katalon.jenkins.plugin.Handler.KatalonAnalyticsSearchHandler;
 import com.katalon.jenkins.plugin.Utils.JenkinsLogger;
@@ -139,6 +140,25 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
       } catch (Exception e) {
         return FormValidation.error("Error " + e.getMessage());
       }
+    }
+
+    public ListBoxModel doFillProjectIdItems(@QueryParameter("serverUrl") final String url,
+                                             @QueryParameter("apiKey") final String apiKey) {
+      ListBoxModel options = new ListBoxModel();
+      KatalonAnalyticsHandler katalonAnalyticsHandler = new KatalonAnalyticsHandler();
+      try {
+        String token = katalonAnalyticsHandler.requestToken(url, apiKey);
+        if (token != null) {
+          KatalonAnalyticsSearchHandler katalonAnalyticsSearchHandler = new KatalonAnalyticsSearchHandler();
+          Project[] projects = katalonAnalyticsSearchHandler.getProjects(token, url);
+          for (Project project : projects) {
+            options.add(project.getName(), String.valueOf(project.getId()));
+          }
+        }
+      } catch (Exception e) {
+
+      }
+      return options;
     }
 
     public ListBoxModel doFillPlanKAItems(@QueryParameter("serverUrl") final String url,

@@ -3,6 +3,7 @@ package com.katalon.jenkins.plugin.Handler;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.katalon.jenkins.plugin.Entity.Plan;
+import com.katalon.jenkins.plugin.Entity.Project;
 import com.katalon.jenkins.plugin.Helper.HttpHelper;
 import com.katalon.jenkins.plugin.search.SearchCondition;
 import com.katalon.jenkins.plugin.search.SearchPagination;
@@ -15,6 +16,7 @@ import org.apache.commons.io.IOUtils;
 
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -54,6 +56,17 @@ public class KatalonAnalyticsSearchHandler {
 //      log.error("Resources not found", e);
       return null;
     }
+  }
+
+  public Project[] getProjects(String token, String serverUrl) {
+    SearchParameter searchParameter = new SearchParameter();
+    searchParameter.setType("Project");
+    searchParameter.setConditions(Collections.emptyList());
+    SearchPagination pagination = new SearchPagination(0L, 30L, null);
+    searchParameter.setPagination(pagination);
+
+    List<Object> content = search(token, serverUrl, searchParameter);
+    return objectMapper.convertValue(content, Project[].class);
   }
 
   public Plan[] getPlan(String token, String serverUrl, String projectId) {

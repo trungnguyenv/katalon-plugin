@@ -5,17 +5,17 @@
         <f:textbox />
     </f:entry>
 
-    <f:entry title="API Key (Katalon Analytics)" field="apiKey">
-        <f:textbox />
-    </f:entry>
-
-    <f:entry title="Project ID (Katalon Analytics)" field="projectId">
+    <f:entry title="API Key" field="apiKey">
         <f:textbox />
     </f:entry>
 
     <f:validateButton title="Test Connection" progress="Testing..." method="testConnection" with="serverUrl,apiKey" />
 
-    <f:entry field="planKA" title="Choose Test Plan">
+    <f:entry title="Project" field="projectId">
+        <f:select />
+    </f:entry>
+
+    <f:entry title="Choose Test Plan" field="planKA">
         <f:select />
     </f:entry>
 
