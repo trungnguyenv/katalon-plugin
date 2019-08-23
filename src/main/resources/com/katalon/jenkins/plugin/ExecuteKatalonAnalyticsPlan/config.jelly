@@ -5,6 +5,12 @@
             <f:textbox />
         </f:entry>
 
+    <f:entry title="API Key (Katalon Analytics)" field="apiKey">
+        <f:textbox name="apiKey" value="${inst.getValue().getApiKey}" />
+    </f:entry>
+
+    <f:validateButton title="Test Connection" progress="Testing..." method="testConnection" with="serverUrl,apiKey" />
+
     <f:entry title="Plan ID" field="planId">
         <f:textbox />
     </f:entry>

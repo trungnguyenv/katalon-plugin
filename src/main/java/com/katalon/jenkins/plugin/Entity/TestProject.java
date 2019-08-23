@@ -2,11 +2,11 @@ package com.katalon.jenkins.plugin.Entity;
 
 public class TestProject {
 
-  //teamId
   private long id;
 
-  //projectId
   private long projectId;
+
+  private long teamId;
 
   public long getId() {
     return id;
@@ -22,5 +22,13 @@ public class TestProject {
 
   public void setProjectId(long projectId) {
     this.projectId = projectId;
+  }
+
+  public long getTeamId() {
+    return teamId;
+  }
+
+  public void setTeamId(long teamId) {
+    this.teamId = teamId;
   }
 }
