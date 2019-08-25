@@ -44,7 +44,7 @@ public class KatalonAnalyticsSearchHandler {
           token,
           null,
           null,
-          IOUtils.toInputStream(requestContent), //?
+          IOUtils.toInputStream(requestContent),
           null,
           null);
 

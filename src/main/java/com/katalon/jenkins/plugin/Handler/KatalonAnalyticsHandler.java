@@ -57,12 +57,6 @@ public class KatalonAnalyticsHandler {
   }
 
   public boolean run(String serverUrl, String apiKey, String plan, String projectId) {
-    logger.info("apiKey: " + apiKey);
-    logger.info("serverUrl: " + serverUrl);
-    logger.info("plan : " + plan);
-    logger.info("projectId : " + projectId);
-
-
     try {
       String token = requestToken(serverUrl, apiKey);
 
@@ -82,7 +76,7 @@ public class KatalonAnalyticsHandler {
         while (true) {
           Job job = getJob(token, serverUrl, jobId);
           if (job == null) {
-            logger.info("Cannot get job from KA");
+            logger.info("Cannot get job from Katalon Analytics");
             break;
           }
           if (jobStatus == null) {
