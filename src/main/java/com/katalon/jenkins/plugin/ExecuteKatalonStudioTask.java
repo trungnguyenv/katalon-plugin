@@ -1,8 +1,6 @@
 package com.katalon.jenkins.plugin;
 
-import com.google.common.base.Throwables;
-import com.katalon.utils.KatalonUtils;
-import com.katalon.utils.Logger;
+import com.katalon.jenkins.plugin.Utils.ExecuteKatalonStudioUtils;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -10,17 +8,13 @@ import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
-import hudson.remoting.Callable;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.Builder;
 import net.sf.json.JSONObject;
-import org.jenkinsci.remoting.RoleChecker;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ExecuteKatalonStudioTask extends Builder {
 
@@ -36,11 +30,11 @@ public class ExecuteKatalonStudioTask extends Builder {
 
     @DataBoundConstructor
     public ExecuteKatalonStudioTask(
-            String version,
-            String location,
-            String executeArgs,
-            String x11Display,
-            String xvfbConfiguration) {
+        String version,
+        String location,
+        String executeArgs,
+        String x11Display,
+        String xvfbConfiguration) {
         this.version = version;
         this.location = location;
         this.executeArgs = executeArgs;
@@ -90,20 +84,20 @@ public class ExecuteKatalonStudioTask extends Builder {
 
     @Override
     public boolean perform(AbstractBuild<?, ?> abstractBuild, Launcher launcher, BuildListener buildListener)
-            throws InterruptedException, IOException {
+        throws InterruptedException, IOException {
 
         FilePath workspace = abstractBuild.getWorkspace();
         EnvVars buildEnvironment = abstractBuild.getEnvironment(buildListener);
         return ExecuteKatalonStudioUtils.executeKatalon(
-                workspace,
-                buildEnvironment,
-                launcher,
-                buildListener,
-                version,
-                location,
-                executeArgs,
-                x11Display,
-                xvfbConfiguration);
+            workspace,
+            buildEnvironment,
+            launcher,
+            buildListener,
+            version,
+            location,
+            executeArgs,
+            x11Display,
+            xvfbConfiguration);
     }
 
     @Extension
