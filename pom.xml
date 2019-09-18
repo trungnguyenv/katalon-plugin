@@ -80,10 +80,10 @@
             <artifactId>junit</artifactId>
             <version>${junit.plugin.version}</version>
         </dependency>
-        <dependency>
+<!--         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.katalon</groupId>
             <artifactId>utils</artifactId>
