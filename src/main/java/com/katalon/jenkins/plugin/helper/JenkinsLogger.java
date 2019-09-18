@@ -1,4 +1,4 @@
-package com.katalon.jenkins.plugin.Utils;
+package com.katalon.jenkins.plugin.helper;
 
 import com.katalon.utils.Logger;
 import hudson.model.BuildListener;

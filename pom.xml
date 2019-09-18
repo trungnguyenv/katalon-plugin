@@ -30,6 +30,7 @@
         <jackson.version>2.9.5</jackson.version>
         <commons-lang3.version>3.8.1</commons-lang3.version>
         <utils.version>1.0.8</utils.version>
+        <httpclient.version>4.5.10</httpclient.version>
     </properties>
 
     <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
@@ -88,6 +89,11 @@
             <groupId>com.katalon</groupId>
             <artifactId>utils</artifactId>
             <version>${utils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
         </dependency>
     </dependencies>
 

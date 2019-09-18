@@ -1,19 +1,19 @@
-package com.katalon.jenkins.plugin.Handler;
+package com.katalon.jenkins.plugin.helper;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.katalon.jenkins.plugin.Entity.*;
-import com.katalon.jenkins.plugin.Helper.HttpHelper;
+import com.katalon.jenkins.plugin.helper.HttpHelper;
 import com.katalon.utils.Logger;
-import hidden.jth.org.apache.http.HttpHeaders;
-import hidden.jth.org.apache.http.HttpResponse;
-import hidden.jth.org.apache.http.NameValuePair;
-import hidden.jth.org.apache.http.client.HttpResponseException;
-import hidden.jth.org.apache.http.client.methods.HttpGet;
-import hidden.jth.org.apache.http.client.methods.HttpPost;
-import hidden.jth.org.apache.http.client.methods.HttpPut;
-import hidden.jth.org.apache.http.client.utils.URIBuilder;
-import hidden.jth.org.apache.http.message.BasicNameValuePair;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class KatalonAnalyticsHandler {
+public class KatalonAnalyticsHelper {
 
   private static String TOKEN_URI = "/oauth/token";
 
@@ -42,11 +42,11 @@ public class KatalonAnalyticsHandler {
 
   private Logger logger;
 
-  public KatalonAnalyticsHandler() {
+  public KatalonAnalyticsHelper() {
     init();
   }
 
-  public KatalonAnalyticsHandler(Logger logger) {
+  public KatalonAnalyticsHelper(Logger logger) {
     this.logger = logger;
     init();
   }

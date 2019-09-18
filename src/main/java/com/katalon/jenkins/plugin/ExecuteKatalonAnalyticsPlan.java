@@ -2,9 +2,9 @@ package com.katalon.jenkins.plugin;
 
 import com.katalon.jenkins.plugin.Entity.Plan;
 import com.katalon.jenkins.plugin.Entity.Project;
-import com.katalon.jenkins.plugin.Handler.KatalonAnalyticsHandler;
-import com.katalon.jenkins.plugin.Handler.KatalonAnalyticsSearchHandler;
-import com.katalon.jenkins.plugin.Utils.JenkinsLogger;
+import com.katalon.jenkins.plugin.helper.KatalonAnalyticsHelper;
+import com.katalon.jenkins.plugin.helper.KatalonAnalyticsSearchHelper;
+import com.katalon.jenkins.plugin.helper.JenkinsLogger;
 import com.katalon.utils.Logger;
 import hudson.Extension;
 import hudson.Launcher;
@@ -81,7 +81,7 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
   public boolean perform(AbstractBuild<?, ?> abstractBuild, Launcher launcher, BuildListener buildListener)
       throws InterruptedException, IOException {
     Logger logger = new JenkinsLogger(buildListener);
-    KatalonAnalyticsHandler katalonAnalyticsHandler = new KatalonAnalyticsHandler(logger);
+    KatalonAnalyticsHelper katalonAnalyticsHandler = new KatalonAnalyticsHelper(logger);
     return katalonAnalyticsHandler.run(serverUrl, apiKey, plan, projectId);
   }
 
@@ -129,7 +129,7 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
 
     public FormValidation doTestConnection(@QueryParameter("serverUrl") final String url,
                                            @QueryParameter("apiKey") final String apiKey) {
-      KatalonAnalyticsHandler katalonAnalyticsHandler = new KatalonAnalyticsHandler();
+      KatalonAnalyticsHelper katalonAnalyticsHandler = new KatalonAnalyticsHelper();
       try {
         String token = katalonAnalyticsHandler.requestToken(url, apiKey);
         if (token != null) {
@@ -145,11 +145,11 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
     public ListBoxModel doFillProjectIdItems(@QueryParameter("serverUrl") final String url,
                                              @QueryParameter("apiKey") final String apiKey) {
       ListBoxModel options = new ListBoxModel();
-      KatalonAnalyticsHandler katalonAnalyticsHandler = new KatalonAnalyticsHandler();
+      KatalonAnalyticsHelper katalonAnalyticsHandler = new KatalonAnalyticsHelper();
       try {
         String token = katalonAnalyticsHandler.requestToken(url, apiKey);
         if (token != null) {
-          KatalonAnalyticsSearchHandler katalonAnalyticsSearchHandler = new KatalonAnalyticsSearchHandler();
+          KatalonAnalyticsSearchHelper katalonAnalyticsSearchHandler = new KatalonAnalyticsSearchHelper();
           Project[] projects = katalonAnalyticsSearchHandler.getProjects(token, url);
           for (Project project : projects) {
             options.add(project.getName(), String.valueOf(project.getId()));
@@ -165,11 +165,11 @@ public class ExecuteKatalonAnalyticsPlan extends Builder {
                                           @QueryParameter("apiKey") final String apiKey,
                                           @QueryParameter("projectId") final String projectId) {
       ListBoxModel options = new ListBoxModel();
-      KatalonAnalyticsHandler katalonAnalyticsHandler = new KatalonAnalyticsHandler();
+      KatalonAnalyticsHelper katalonAnalyticsHandler = new KatalonAnalyticsHelper();
       try {
         String token = katalonAnalyticsHandler.requestToken(url, apiKey);
         if (token != null) {
-          KatalonAnalyticsSearchHandler katalonAnalyticsSearchHandler = new KatalonAnalyticsSearchHandler();
+          KatalonAnalyticsSearchHelper katalonAnalyticsSearchHandler = new KatalonAnalyticsSearchHelper();
           Plan[] plans = katalonAnalyticsSearchHandler.getPlan(token, url, projectId);
           for (Plan plan : plans) {
             options.add(plan.getName(), String.valueOf(plan.getId()));

@@ -1,4 +1,4 @@
-package com.katalon.jenkins.plugin.Utils;
+package com.katalon.jenkins.plugin.helper;
 
 import com.google.common.base.Throwables;
 import com.katalon.utils.KatalonUtils;
@@ -13,7 +13,7 @@ import org.jenkinsci.remoting.RoleChecker;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExecuteKatalonStudioUtils {
+public class ExecuteKatalonStudioHelper {
 
     public static boolean executeKatalon(
             FilePath workspace,

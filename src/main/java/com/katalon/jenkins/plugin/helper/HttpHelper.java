@@ -1,20 +1,20 @@
-package com.katalon.jenkins.plugin.Helper;
+package com.katalon.jenkins.plugin.helper;
 
-import hidden.jth.org.apache.http.HttpEntity;
-import hidden.jth.org.apache.http.HttpHeaders;
-import hidden.jth.org.apache.http.HttpResponse;
-import hidden.jth.org.apache.http.NameValuePair;
-import hidden.jth.org.apache.http.client.HttpClient;
-import hidden.jth.org.apache.http.client.config.RequestConfig;
-import hidden.jth.org.apache.http.client.entity.UrlEncodedFormEntity;
-import hidden.jth.org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import hidden.jth.org.apache.http.client.methods.HttpUriRequest;
-import hidden.jth.org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import hidden.jth.org.apache.http.entity.InputStreamEntity;
-import hidden.jth.org.apache.http.impl.NoConnectionReuseStrategy;
-import hidden.jth.org.apache.http.impl.client.HttpClientBuilder;
-import hidden.jth.org.apache.http.ssl.SSLContextBuilder;
-import hidden.jth.org.apache.http.ssl.TrustStrategy;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.NoConnectionReuseStrategy;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;

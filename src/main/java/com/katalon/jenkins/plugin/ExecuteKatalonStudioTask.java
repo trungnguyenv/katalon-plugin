@@ -1,6 +1,6 @@
 package com.katalon.jenkins.plugin;
 
-import com.katalon.jenkins.plugin.Utils.ExecuteKatalonStudioUtils;
+import com.katalon.jenkins.plugin.helper.ExecuteKatalonStudioHelper;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.FilePath;
@@ -88,7 +88,7 @@ public class ExecuteKatalonStudioTask extends Builder {
 
         FilePath workspace = abstractBuild.getWorkspace();
         EnvVars buildEnvironment = abstractBuild.getEnvironment(buildListener);
-        return ExecuteKatalonStudioUtils.executeKatalon(
+        return ExecuteKatalonStudioHelper.executeKatalon(
             workspace,
             buildEnvironment,
             launcher,
