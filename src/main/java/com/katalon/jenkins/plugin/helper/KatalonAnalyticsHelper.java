@@ -3,7 +3,6 @@ package com.katalon.jenkins.plugin.helper;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.katalon.jenkins.plugin.Entity.*;
-import com.katalon.jenkins.plugin.helper.HttpHelper;
 import com.katalon.utils.Logger;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -111,7 +110,7 @@ public class KatalonAnalyticsHelper {
 
   private String getJobUrl(String serverUrl, Job job, Object plainId) {
     TestProject testProject = job.getTestProject();
-    return String.format(serverUrl + LOG_INFOR, testProject.getTeamId(), testProject.getProjectId(), plainId ,job.getId());
+    return String.format(serverUrl + LOG_INFOR, testProject.getTeamId(), testProject.getProjectId(), plainId, job.getOrder());
   }
 
   private Job getJob(String token, String serverUrl, long jobId) {
