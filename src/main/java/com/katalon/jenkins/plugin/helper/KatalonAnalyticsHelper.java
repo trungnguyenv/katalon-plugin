@@ -110,7 +110,7 @@ public class KatalonAnalyticsHelper {
 
   private String getJobUrl(String serverUrl, Job job, Object plainId) {
     TestProject testProject = job.getTestProject();
-    return String.format(serverUrl + LOG_INFOR, testProject.getTeamId(), testProject.getProjectId(), plainId ,job.getOrder());
+    return String.format(serverUrl + LOG_INFOR, testProject.getTeamId(), testProject.getProjectId(), plainId, job.getOrder());
   }
 
   private Job getJob(String token, String serverUrl, long jobId) {
