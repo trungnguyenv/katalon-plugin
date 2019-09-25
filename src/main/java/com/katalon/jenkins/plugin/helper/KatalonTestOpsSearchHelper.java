@@ -2,9 +2,8 @@ package com.katalon.jenkins.plugin.helper;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.katalon.jenkins.plugin.Entity.Plan;
-import com.katalon.jenkins.plugin.Entity.Project;
-import com.katalon.jenkins.plugin.helper.HttpHelper;
+import com.katalon.jenkins.plugin.entity.Plan;
+import com.katalon.jenkins.plugin.entity.Project;
 import com.katalon.jenkins.plugin.search.SearchCondition;
 import com.katalon.jenkins.plugin.search.SearchPagination;
 import com.katalon.jenkins.plugin.search.SearchParameter;
@@ -20,13 +19,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class KatalonAnalyticsSearchHelper {
+public class KatalonTestOpsSearchHelper {
 
   private static final String SEARCH_URL = "/api/v1/search";
 
   private ObjectMapper objectMapper;
 
-  public KatalonAnalyticsSearchHelper() {
+  public KatalonTestOpsSearchHelper() {
     objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
   }

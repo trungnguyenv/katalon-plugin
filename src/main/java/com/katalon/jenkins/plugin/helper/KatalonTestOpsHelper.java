@@ -2,7 +2,7 @@ package com.katalon.jenkins.plugin.helper;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.katalon.jenkins.plugin.Entity.*;
+import com.katalon.jenkins.plugin.entity.*;
 import com.katalon.utils.Logger;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-public class KatalonAnalyticsHelper {
+public class KatalonTestOpsHelper {
 
   private static String TOKEN_URI = "/oauth/token";
 
@@ -41,11 +41,11 @@ public class KatalonAnalyticsHelper {
 
   private Logger logger;
 
-  public KatalonAnalyticsHelper() {
+  public KatalonTestOpsHelper() {
     init();
   }
 
-  public KatalonAnalyticsHelper(Logger logger) {
+  public KatalonTestOpsHelper(Logger logger) {
     this.logger = logger;
     init();
   }
@@ -75,7 +75,7 @@ public class KatalonAnalyticsHelper {
         while (true) {
           Job job = getJob(token, serverUrl, jobId);
           if (job == null) {
-            logger.info("Cannot get job from Katalon Analytics");
+            logger.info("Cannot get job from Katalon TestOps");
             break;
           }
           if (jobStatus == null) {
@@ -92,7 +92,7 @@ public class KatalonAnalyticsHelper {
             logger.info("Job Status: " + jobStatus);
           } else {
             logger.info("Job Status: " + jobStatus);
-            logger.info("Execute done");
+            logger.info("Execute done.");
             if (jobStatus == JobStatus.SUCCESS) {
               return true;
             }

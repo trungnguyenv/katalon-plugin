@@ -1,4 +1,4 @@
-package com.katalon.jenkins.plugin.Entity;
+package com.katalon.jenkins.plugin.entity;
 
 import java.util.Arrays;
 import java.util.List;

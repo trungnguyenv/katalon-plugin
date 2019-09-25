@@ -1,4 +1,4 @@
-package com.katalon.jenkins.plugin.Entity;
+package com.katalon.jenkins.plugin.entity;
 
 public class BuildInfo {
 
