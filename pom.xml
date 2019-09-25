@@ -77,9 +77,9 @@
 
     <dependencies>
         <dependency>
-          <groupId>org.jenkins-ci.plugins</groupId>
-          <artifactId>junit</artifactId>
-          <version>${junit.plugin.version}</version>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.plugin.version}</version>
         </dependency>
 <!--         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
