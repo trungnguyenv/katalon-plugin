@@ -5,9 +5,9 @@
         <f:textbox />
     </f:entry>
 
-     <f:entry title="Credentials" field="credentialsId">
+    <f:entry title="Credentials" field="credentialsId">
         <c:select/>
-     </f:entry>
+    </f:entry>
 
     <f:validateButton title="Test Connection" progress="Testing..." method="testConnection" with="serverUrl,credentialsId"/>
 
