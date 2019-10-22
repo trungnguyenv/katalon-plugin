@@ -21,7 +21,12 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
@@ -54,7 +59,7 @@ public class HttpHelper {
 
     if (username != null) {
       String basicToken = username + ":" + password;
-      String encodedBasicToken = Base64.getEncoder().encodeToString(basicToken.getBytes());
+      String encodedBasicToken = Base64.getEncoder().encodeToString(basicToken.getBytes(StandardCharsets.UTF_8));
       httpRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encodedBasicToken);
     }
 
@@ -110,11 +115,10 @@ public class HttpHelper {
       KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
       TrustStrategy trustStrategy = new TrustAllStrategy();
       sslContextBuilder.loadTrustMaterial(keyStore, trustStrategy);
-      sslContextBuilder.useProtocol("TLSv1.2");
+      sslContextBuilder.setProtocol("TLS");
       SSLContext sslContext = sslContextBuilder.build();
       return sslContext;
-    } catch (Exception e) {
-//            return exceptionHelper.wrap(e);
+    } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
       return null;
     }
   }

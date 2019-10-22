@@ -1,5 +1,6 @@
 package com.katalon.jenkins.plugin.helper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.katalon.jenkins.plugin.entity.Plan;
@@ -13,7 +14,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.commons.io.IOUtils;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -51,8 +54,7 @@ public class KatalonTestOpsSearchHelper {
       Map map = objectMapper.readValue(responseContent, Map.class);
       List<Object> content = (List) map.get("content");
       return content;
-    } catch (Exception e) {
-//      log.error("Resources not found", e);
+    } catch (URISyntaxException | IOException e) {
       return null;
     }
   }

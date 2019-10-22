@@ -255,8 +255,9 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
         @AncestorInPath Item item,
         @QueryParameter String credentialsId) {
       StandardListBoxModel result = new StandardListBoxModel();
+      Jenkins instance = Jenkins.getInstance();
       if (item == null) {
-        if (!Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER)) {
+        if (!instance.hasPermission(Jenkins.ADMINISTER)) {
           return result.includeCurrentValue(credentialsId);
         }
       } else {
@@ -268,7 +269,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       return result.includeEmptyValue()
           .includeMatchingAs(
               ACL.SYSTEM,
-              Jenkins.getInstance(),
+              instance,
               StringCredentials.class,
               URIRequirementBuilder.fromUri("").build(),
               CredentialsMatchers.always()
