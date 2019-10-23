@@ -15,6 +15,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
@@ -170,7 +171,7 @@ public class KatalonTestOpsHelper {
     HttpPost httpPost = new HttpPost(uriBuilder.build());
     String clientCredentials = serverApiOAuth2ClientId + ":" + serverApiOAuth2ClientSecret;
     httpPost.setHeader(HttpHeaders.AUTHORIZATION, "Basic " +
-        Base64.getEncoder().encodeToString(clientCredentials.getBytes()));
+        Base64.getEncoder().encodeToString(clientCredentials.getBytes(StandardCharsets.UTF_8)));
     HttpResponse httpResponse = HttpHelper.sendRequest(
         httpPost,
         null,
