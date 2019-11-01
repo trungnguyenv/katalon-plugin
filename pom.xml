@@ -29,7 +29,7 @@
         <junit.plugin.version>1.20</junit.plugin.version>
         <jackson.version>2.9.5</jackson.version>
         <commons-lang3.version>3.8.1</commons-lang3.version>
-        <utils.version>1.0.11</utils.version>
+        <utils.version>1.0.12</utils.version>
         <httpclient.version>4.5.10</httpclient.version>
     </properties>
 
