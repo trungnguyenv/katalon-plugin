@@ -12,6 +12,7 @@ import com.katalon.jenkins.plugin.helper.JenkinsLogger;
 import com.katalon.utils.Logger;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.RelativePath;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
@@ -24,6 +25,7 @@ import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -31,6 +33,7 @@ import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExecuteKatalonTestOpsPlan extends Builder {
@@ -204,13 +207,16 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
             KatalonTestOpsSearchHelper katalonTestOpsSearchHelper = new KatalonTestOpsSearchHelper();
             Project[] projects = katalonTestOpsSearchHelper.getProjects(token, url);
             for (Project project : projects) {
-              options.add(project.getName(), String.valueOf(project.getId()));
+              ListBoxModel.Option option = new ListBoxModel.Option(project.getName(), String.valueOf(project.getId()), false);
+              options.add(option);
             }
           }
         } catch (Exception e) {
           //Do nothing here
         }
       }
+      ListBoxModel.Option option = new ListBoxModel.Option("", "", true);
+      options.add(option);
       return options;
     }
 
@@ -227,7 +233,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
         return options;
       }
 
-      if (projectId.isEmpty()) {
+      if (StringUtils.isEmpty(projectId)) {
         return options;
       }
 
