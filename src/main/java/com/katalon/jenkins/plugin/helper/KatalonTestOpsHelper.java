@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.katalon.jenkins.plugin.entity.*;
 import com.katalon.utils.Logger;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -15,6 +16,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Base64;
@@ -128,8 +130,11 @@ public class KatalonTestOpsHelper {
           null,
           null,
           null);
-      InputStream responseContent = httpResponse.getEntity().getContent();
-
+      InputStream responseContentStream = httpResponse.getEntity().getContent();
+      StringWriter writer = new StringWriter();
+      IOUtils.copy(responseContentStream, writer, StandardCharsets.UTF_8);
+      String responseContent = writer.toString();
+      logger.info("Response: " + responseContent);
       return objectMapper.readValue(responseContent, Job.class);
     } catch (Exception e) {
       logger.info(e.getMessage());
@@ -151,8 +156,13 @@ public class KatalonTestOpsHelper {
           null,
           null,
           null);
-      InputStream responseContent = httpResponse.getEntity().getContent();
+      InputStream responseContentStream = httpResponse.getEntity().getContent();
+      StringWriter writer = new StringWriter();
+      IOUtils.copy(responseContentStream, writer, StandardCharsets.UTF_8);
+      String responseContent = writer.toString();
+      logger.info("Response: " + responseContent);
       BuildInfo[] buildInfos = objectMapper.readValue(responseContent, BuildInfo[].class);
+
       return buildInfos[0];
     } catch (Exception e) {
       logger.info(e.getMessage());

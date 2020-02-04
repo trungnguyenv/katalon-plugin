@@ -214,7 +214,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
           //Do nothing here
         }
       }
-      ListBoxModel.Option option = new ListBoxModel.Option("", "", true);
+      ListBoxModel.Option option = new ListBoxModel.Option("Please select project", "", true);
       options.add(option);
       return options;
     }
