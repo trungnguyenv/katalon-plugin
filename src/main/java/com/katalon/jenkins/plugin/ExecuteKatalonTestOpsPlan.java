@@ -12,7 +12,6 @@ import com.katalon.jenkins.plugin.helper.JenkinsLogger;
 import com.katalon.utils.Logger;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.RelativePath;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
