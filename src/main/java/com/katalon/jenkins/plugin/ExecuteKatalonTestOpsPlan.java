@@ -3,6 +3,7 @@ package com.katalon.jenkins.plugin;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardListBoxModel;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.katalon.jenkins.plugin.entity.Plan;
 import com.katalon.jenkins.plugin.entity.Project;
@@ -12,10 +13,8 @@ import com.katalon.jenkins.plugin.helper.JenkinsLogger;
 import com.katalon.utils.Logger;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
-import hudson.model.Item;
+import hudson.model.*;
+import hudson.model.queue.Tasks;
 import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
@@ -26,20 +25,20 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
-import org.kohsuke.stapler.AncestorInPath;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class ExecuteKatalonTestOpsPlan extends Builder {
 
+  private String credentialsId;
+
   private String apiKey;
 
-  private String plan;
+  private String planId;
 
   private String serverUrl;
 
@@ -47,14 +46,24 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
 
   @DataBoundConstructor
   public ExecuteKatalonTestOpsPlan(
+      String credentialsId,
       String apiKey,
       String serverUrl,
       String projectId,
-      String plan) {
+      String planId) {
+    this.credentialsId = credentialsId;
     this.apiKey = apiKey;
-    this.plan = plan;
+    this.planId = planId;
     this.serverUrl = serverUrl;
     this.projectId = projectId;
+  }
+
+  public String getCredentialsId() {
+    return credentialsId;
+  }
+
+  public void setCredentialsId(String credentialsId) {
+    this.credentialsId = credentialsId;
   }
 
   public String getApiKey() {
@@ -81,12 +90,12 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
     this.projectId = projectId;
   }
 
-  public String getPlan() {
-    return plan;
+  public String getPlanId() {
+    return planId;
   }
 
-  public void setPlan(String plan) {
-    this.plan = plan;
+  public void setPlanId(String planId) {
+    this.planId = planId;
   }
 
   @Override
@@ -94,7 +103,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       throws InterruptedException, IOException {
     Logger logger = new JenkinsLogger(buildListener);
     KatalonTestOpsHelper katalonAnalyticsHandler = new KatalonTestOpsHelper(logger);
-    return katalonAnalyticsHandler.run(serverUrl, apiKey, plan, projectId);
+    return katalonAnalyticsHandler.run(serverUrl, apiKey, planId, projectId);
   }
 
   @Override
@@ -115,16 +124,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       return true; // We are always OK with someone adding this  as a build step for their job
     }
 
-    private String credentialsId;
-
-    private String apiKey;
-
-    private String serverUrl;
-
-    private String projectId;
-
-    private String plan;
-
     public DescriptorImpl() {
       super(ExecuteKatalonTestOpsPlan.class);
       load();
@@ -132,12 +131,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
 
     @Override
     public boolean configure(StaplerRequest req, JSONObject formData) throws FormException {
-      req.bindParameters(this);
-      this.credentialsId = formData.getString("credentialsId");
-      this.apiKey = getApiKey(this.credentialsId);
-      this.projectId = formData.getString("projectId");
-      this.serverUrl = formData.getString("serverUrl");
-      this.plan = formData.getString("planId");
+      req.bindJSON(this, formData);
       save();
       return super.configure(req, formData);
     }
@@ -146,7 +140,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       if (credentialsId == null) {
         return null;
       }
-      List<StringCredentials> creds = CredentialsProvider.lookupCredentials(StringCredentials.class, Jenkins.getInstance(), ACL.SYSTEM);
+      List<StringCredentials> creds = CredentialsProvider.lookupCredentials(StringCredentials.class, Jenkins.getInstance(), ACL.SYSTEM, Collections.<DomainRequirement>emptyList());
       StringCredentials credentials = null;
       for (StringCredentials c : creds) {
         if (credentialsId.matches(c.getId())) {
@@ -158,7 +152,6 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
 
     public FormValidation doTestConnection(@QueryParameter("serverUrl") final String url,
                                            @QueryParameter("credentialsId") final String credentialsId) {
-
       if (url.isEmpty()) {
         return FormValidation.error("Please input server url.\n Example: https://analytics.katalon.com");
       }
@@ -187,16 +180,15 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
 
     public ListBoxModel doFillProjectIdItems(@QueryParameter("serverUrl") final String url,
                                              @QueryParameter("credentialsId") final String credentialsId) {
-      ListBoxModel options = new ListBoxModel();
-
       if (url.isEmpty()) {
-        return options;
+        return new ListBoxModel();
       }
 
       if (credentialsId.isEmpty()) {
-        return options;
+        return new ListBoxModel();
       }
 
+      ListBoxModel options = new ListBoxModel();
       String apiKey = getApiKey(credentialsId);
       if (apiKey != null) {
         KatalonTestOpsHelper katalonTestOpsHelper = new KatalonTestOpsHelper();
@@ -206,40 +198,38 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
             KatalonTestOpsSearchHelper katalonTestOpsSearchHelper = new KatalonTestOpsSearchHelper();
             Project[] projects = katalonTestOpsSearchHelper.getProjects(token, url);
             for (Project project : projects) {
-              ListBoxModel.Option option = new ListBoxModel.Option(project.getName(), String.valueOf(project.getId()), false);
-              options.add(option);
+              options.add(project.getName(), String.valueOf(project.getId()));
             }
           }
         } catch (Exception e) {
           //Do nothing here
         }
       }
-      ListBoxModel.Option option = new ListBoxModel.Option("Please select project", "", true);
-      options.add(option);
+      options.add("--- Please select project ---", "");
       return options;
     }
 
     public ListBoxModel doFillPlanIdItems(@QueryParameter("serverUrl") final String url,
                                           @QueryParameter("credentialsId") final String credentialsId,
                                           @QueryParameter("projectId") final String projectId) {
-      ListBoxModel options = new ListBoxModel();
-
       if (url.isEmpty()) {
-        return options;
+        return new ListBoxModel();
       }
 
       if (credentialsId.isEmpty()) {
-        return options;
+        return new ListBoxModel();
       }
 
       if (StringUtils.isEmpty(projectId)) {
-        return options;
+        return new ListBoxModel();
       }
 
       String apiKey = getApiKey(credentialsId);
       if (apiKey == null) {
-        return options;
+        return new ListBoxModel();
       }
+
+      ListBoxModel options = new ListBoxModel();
       KatalonTestOpsHelper katalonTestOpsHelper = new KatalonTestOpsHelper();
       try {
         String token = katalonTestOpsHelper.requestToken(url, apiKey);
@@ -253,73 +243,34 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       } catch (Exception e) {
         //Do nothing here
       }
+      options.add("--- Please select plan ---", "");
+
       return options;
     }
 
-    public ListBoxModel doFillCredentialsIdItems(
-        @AncestorInPath Item item,
-        @QueryParameter String credentialsId) {
-      StandardListBoxModel result = new StandardListBoxModel();
+    public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item,
+                                                 @QueryParameter String credentialsId) {
       Jenkins instance = Jenkins.getInstance();
-      if (item == null) {
-        if (!instance.hasPermission(Jenkins.ADMINISTER)) {
-          return result.includeCurrentValue(credentialsId);
-        }
-      } else {
-        if (!item.hasPermission(Item.EXTENDED_READ)
-            && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
-          return result.includeCurrentValue(credentialsId);
-        }
+      if ((item == null && !instance.hasPermission(Jenkins.ADMINISTER)) ||
+        (item != null && !item.hasPermission(Item.EXTENDED_READ))) {
+        return new StandardListBoxModel().includeCurrentValue(credentialsId);
       }
-      return result.includeEmptyValue()
-          .includeMatchingAs(
-              ACL.SYSTEM,
-              instance,
-              StringCredentials.class,
-              URIRequirementBuilder.fromUri("").build(),
-              CredentialsMatchers.always()
-          )
-          .includeCurrentValue(credentialsId);
-    }
+      if (item == null) {
+        // Construct a fake project
+        item = new FreeStyleProject(instance, "fake-" + UUID.randomUUID().toString());
+      }
 
-    public void setCredentialsId(String credentialsId) {
-      this.credentialsId = credentialsId;
-    }
-
-    public String getCredentialsId() {
-      return credentialsId;
-    }
-
-    public void setApiKey(String apiKey) {
-      this.apiKey = apiKey;
-    }
-
-    public String getApiKey() {
-      return apiKey;
-    }
-
-    public void setServerUrl(String serverUrl) {
-      this.serverUrl = serverUrl;
-    }
-
-    public String getServerUrl() {
-      return serverUrl;
-    }
-
-    public void setProjectId(String projectId) {
-      this.projectId = projectId;
-    }
-
-    public String getProjectId() {
-      return projectId;
-    }
-
-    public void setPlan(String plan) {
-      this.plan = plan;
-    }
-
-    public String getPlan() {
-      return plan;
+      return new StandardListBoxModel()
+              .includeEmptyValue()
+              .includeMatchingAs(
+                      item instanceof Queue.Task
+                              ? Tasks.getAuthenticationOf((Queue.Task) item)
+                              : ACL.SYSTEM,
+                      item,
+                      StringCredentials.class,
+                      URIRequirementBuilder.fromUri("").build(),
+                      CredentialsMatchers.always())
+              .includeCurrentValue(credentialsId);
     }
 
     @Override
@@ -327,6 +278,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       String credentialsId = formData.getString("credentialsId");
       String apiKey = getApiKey(credentialsId);
       return new ExecuteKatalonTestOpsPlan(
+          credentialsId,
           apiKey,
           formData.getString("serverUrl"),
           formData.getString("projectId"),
