@@ -13,6 +13,7 @@ import com.katalon.jenkins.plugin.helper.JenkinsLogger;
 import com.katalon.utils.Logger;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.Util;
 import hudson.model.*;
 import hudson.model.queue.Tasks;
 import hudson.security.ACL;
@@ -51,10 +52,15 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       String serverUrl,
       String projectId,
       String planId) {
+    serverUrl = Util.fixEmptyAndTrim(serverUrl);
+    if (serverUrl.endsWith("/")) {
+      this.serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
+    } else {
+      this.serverUrl = serverUrl;
+    }
     this.credentialsId = credentialsId;
     this.apiKey = apiKey;
     this.planId = planId;
-    this.serverUrl = serverUrl;
     this.projectId = projectId;
   }
 
@@ -243,9 +249,49 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       } catch (Exception e) {
         //Do nothing here
       }
-      options.add("--- Please select plan ---", "");
-
       return options;
+    }
+
+    public FormValidation doCheckServerUrl(@AncestorInPath Item item,
+                                        @QueryParameter String serverUrl) {
+      if (item == null && !Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER) ||
+              item != null && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+        return FormValidation.ok();
+      }
+
+      if (StringUtils.isEmpty(serverUrl)) {
+        return FormValidation.error("Please enter Server URL");
+      }
+
+      return FormValidation.ok();
+    }
+
+    public FormValidation doCheckProjectId(@AncestorInPath Item item,
+                                        @QueryParameter String projectId) {
+      if (item == null && !Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER) ||
+              item != null && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+        return FormValidation.ok();
+      }
+
+      if (StringUtils.isEmpty(projectId)) {
+        return FormValidation.error("Please select project");
+      }
+
+      return FormValidation.ok();
+    }
+
+    public FormValidation doCheckPlanId(@AncestorInPath Item item,
+                                        @QueryParameter String planId) {
+      if (item == null && !Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER) ||
+              item != null && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
+        return FormValidation.ok();
+      }
+
+      if (StringUtils.isEmpty(planId)) {
+        return FormValidation.error("Please select test plan");
+      }
+
+      return FormValidation.ok();
     }
 
     public ListBoxModel doFillCredentialsIdItems(@AncestorInPath Item item,
