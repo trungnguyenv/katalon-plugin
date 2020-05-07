@@ -39,7 +39,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
 
   private String apiKey;
 
-  private String planId;
+  private String plan;
 
   private String serverUrl;
 
@@ -60,7 +60,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
     }
     this.credentialsId = credentialsId;
     this.apiKey = apiKey;
-    this.planId = planId;
+    this.plan = planId;
     this.projectId = projectId;
   }
 
@@ -96,12 +96,12 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
     this.projectId = projectId;
   }
 
-  public String getPlanId() {
-    return planId;
+  public String getPlan() {
+    return plan;
   }
 
-  public void setPlanId(String planId) {
-    this.planId = planId;
+  public void setPlan(String plan) {
+    this.plan = plan;
   }
 
   @Override
@@ -109,7 +109,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       throws InterruptedException, IOException {
     Logger logger = new JenkinsLogger(buildListener);
     KatalonTestOpsHelper katalonAnalyticsHandler = new KatalonTestOpsHelper(logger);
-    return katalonAnalyticsHandler.run(serverUrl, apiKey, planId, projectId);
+    return katalonAnalyticsHandler.run(serverUrl, apiKey, plan, projectId);
   }
 
   @Override
@@ -215,7 +215,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       return options;
     }
 
-    public ListBoxModel doFillPlanIdItems(@QueryParameter("serverUrl") final String url,
+    public ListBoxModel doFillPlanItems(@QueryParameter("serverUrl") final String url,
                                           @QueryParameter("credentialsId") final String credentialsId,
                                           @QueryParameter("projectId") final String projectId) {
       if (url.isEmpty()) {
@@ -280,14 +280,14 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       return FormValidation.ok();
     }
 
-    public FormValidation doCheckPlanId(@AncestorInPath Item item,
-                                        @QueryParameter String planId) {
+    public FormValidation doCheckPlan(@AncestorInPath Item item,
+                                        @QueryParameter String plan) {
       if (item == null && !Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER) ||
               item != null && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
         return FormValidation.ok();
       }
 
-      if (StringUtils.isEmpty(planId)) {
+      if (StringUtils.isEmpty(plan)) {
         return FormValidation.error("Please select test plan");
       }
 
@@ -328,7 +328,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
           apiKey,
           formData.getString("serverUrl"),
           formData.getString("projectId"),
-          formData.getString("planId"));
+          formData.getString("plan"));
     }
   }
 }
