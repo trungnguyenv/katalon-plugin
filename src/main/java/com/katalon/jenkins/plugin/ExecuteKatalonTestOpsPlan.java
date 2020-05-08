@@ -252,13 +252,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       return options;
     }
 
-    public FormValidation doCheckServerUrl(@AncestorInPath Item item,
-                                        @QueryParameter String serverUrl) {
-      if (item == null && !Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER) ||
-              item != null && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
-        return FormValidation.ok();
-      }
-
+    public FormValidation doCheckServerUrl(@QueryParameter String serverUrl) {
       if (StringUtils.isEmpty(serverUrl)) {
         return FormValidation.error("Please enter Server URL");
       }
@@ -266,13 +260,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       return FormValidation.ok();
     }
 
-    public FormValidation doCheckProjectId(@AncestorInPath Item item,
-                                        @QueryParameter String projectId) {
-      if (item == null && !Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER) ||
-              item != null && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
-        return FormValidation.ok();
-      }
-
+    public FormValidation doCheckProjectId(@QueryParameter String projectId) {
       if (StringUtils.isEmpty(projectId)) {
         return FormValidation.error("Please select project");
       }
@@ -280,13 +268,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       return FormValidation.ok();
     }
 
-    public FormValidation doCheckPlan(@AncestorInPath Item item,
-                                        @QueryParameter String plan) {
-      if (item == null && !Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER) ||
-              item != null && !item.hasPermission(CredentialsProvider.USE_ITEM)) {
-        return FormValidation.ok();
-      }
-
+    public FormValidation doCheckPlan(@QueryParameter String plan) {
       if (StringUtils.isEmpty(plan)) {
         return FormValidation.error("Please select test plan");
       }
