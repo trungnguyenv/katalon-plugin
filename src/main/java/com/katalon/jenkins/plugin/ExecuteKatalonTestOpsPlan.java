@@ -54,8 +54,10 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
       String planId) {
     if (serverUrl == null) {
       serverUrl = "";
+    } else {
+      serverUrl = Util.fixEmptyAndTrim(serverUrl);
     }
-    serverUrl = Util.fixEmptyAndTrim(serverUrl);
+    assert serverUrl != null;
     if (serverUrl.endsWith("/")) {
       this.serverUrl = serverUrl.substring(0, serverUrl.length() - 1);
     } else {
