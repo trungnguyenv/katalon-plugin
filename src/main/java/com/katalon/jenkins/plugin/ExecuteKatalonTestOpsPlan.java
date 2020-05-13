@@ -204,7 +204,9 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
             KatalonTestOpsSearchHelper katalonTestOpsSearchHelper = new KatalonTestOpsSearchHelper();
             Project[] projects = katalonTestOpsSearchHelper.getProjects(token, url);
             for (Project project : projects) {
-              options.add(project.getName(), String.valueOf(project.getId()));
+              String name = project.getName();
+              name = name.replace('\b',' ');
+              options.add(name, String.valueOf(project.getId()));
             }
           }
         } catch (Exception e) {
