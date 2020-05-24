@@ -11,11 +11,9 @@ import com.katalon.jenkins.plugin.helper.KatalonTestOpsSearchHelper;
 import com.katalon.jenkins.plugin.helper.JenkinsLogger;
 import com.katalon.utils.Logger;
 import hudson.Extension;
+import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
-import hudson.model.Item;
+import hudson.model.*;
 import hudson.security.ACL;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
@@ -23,19 +21,21 @@ import hudson.tasks.Builder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
 import jenkins.model.Jenkins;
+import jenkins.tasks.SimpleBuildStep;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.Symbol;
 import org.jenkinsci.plugins.plaincredentials.StringCredentials;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class ExecuteKatalonTestOpsPlan extends Builder {
+public class ExecuteKatalonTestOpsPlan extends Builder implements SimpleBuildStep {
 
   private String apiKey;
 
@@ -92,7 +92,18 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
   @Override
   public boolean perform(AbstractBuild<?, ?> abstractBuild, Launcher launcher, BuildListener buildListener)
       throws InterruptedException, IOException {
-    Logger logger = new JenkinsLogger(buildListener);
+    return doPerform(buildListener);
+  }
+
+  @Override
+  public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath filePath,
+                      @Nonnull Launcher launcher, @Nonnull TaskListener taskListener)
+      throws InterruptedException, IOException {
+    doPerform(taskListener);
+  }
+
+  private boolean doPerform(TaskListener taskListener) {
+    Logger logger = new JenkinsLogger(taskListener);
     KatalonTestOpsHelper katalonAnalyticsHandler = new KatalonTestOpsHelper(logger);
     return katalonAnalyticsHandler.run(serverUrl, apiKey, plan, projectId);
   }
@@ -102,6 +113,7 @@ public class ExecuteKatalonTestOpsPlan extends Builder {
     return BuildStepMonitor.BUILD;
   }
 
+  @Symbol("executeKatalonTestOpsPlan")
   @Extension
   public static class DescriptorImpl extends BuildStepDescriptor<Builder> { // Publisher because Notifiers are a type of publisher
 
